@@ -1,0 +1,33 @@
+
+    <!-- alert messgae on success and error -->
+    <div class="row" id="msg_alert">
+        {% if messages %}
+      <div class="col-12">
+          {% for message in messages %}
+          {% if message.tags == 'error' %}
+          <!-- <div class="alert alert-danger backgroud-danger" style="margin-top:10px;text-align:center;">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <span class="text-center">{{ message }}</span>
+          </div> -->
+          <div class="alert alert-danger background-danger">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <i class="fas fa-times-circle text-white"></i>
+            </button>
+            <span class="text-center">{{ message }}</span>
+            </div>
+          {% elif message.tags == 'success' %}
+          <div class="alert alert-success background-success">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <i class="fas fa-times-circle text-white"></i>
+            </button>
+            <span class="text-center">{{ message }}</span>
+            </div>
+          {% endif %}
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      <!-- / end alert message -->
+    
+      
+  

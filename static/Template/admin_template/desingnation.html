@@ -1,0 +1,186 @@
+{% extends 'admin_template/base.html' %}
+
+{% load static %}
+
+{% block page_title %}Create Desingnation{% endblock page_title %}
+  
+{% block main_content %}
+
+    <!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+    
+    </div>
+    <!-- /.content-header -->
+  
+    <!-- Main content -->
+    <div class="content">
+        <div class="container">
+            <div class="row">
+            
+                <div class="col-sm-12">
+
+                    <div class="card">
+                        <div class="card-header">
+                        <h5>Add a new Politician Category</h5>
+                        </div>
+                        <div class="card-body">
+                            {% include 'admin_template/alert_msg.html'%}
+                        <form action="{% url 'create_desingnation' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="form-group ">
+                                        <label class="">Select State</label>
+                                        <select name="state_id" id="state_id" class="form-control"  required>
+                                            <option disabled selected>Select State</option>
+                                            {% for s in state %}
+                                            <option value="{{s.id}}">{{s.name}}</option>
+                                            {% endfor %}
+                                        </select>   
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group ">
+                                        <label class="">Select District</label>
+                                        <select name="district_id" id ="district_id" class="form-control"  required>
+                                            <option disabled selected>Select State First</option>
+                                        </select>   
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                
+                                <div class="col-sm-6">
+                                    <div class="form-group ">
+                                        <label class="">Select Constitution</label>
+                                        <select name="constitution_id" id ="constitution_id" class="form-control"  required>
+                                            <option disabled selected>Select District First</option>
+                                        </select>   
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                        <div class="form-group ">
+                                            <label class=""> Desingnation Name</label>
+                                            <input type="text" name="desingnation" class="form-control" placeholder="Enetr Constitution Name" required>
+                                        </div>
+                                </div>
+                            </div>
+                                <center><button type="submit" class="btn btn-primary" id="" >Add Desingnation</button></center>         
+                            </div>
+                            </form>
+                        </div>
+                </div>
+                </div>
+            </div>
+
+            <div class="row pr-1">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <table id="desination_table" class="table table-hover table-bordered ">
+                            <thead>
+                            <tr>
+                            <th>State</th>
+                            <th>District</th>
+                            <th>Constitution</th>
+                            <th>Desingnation</th>
+                            <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {%  for d in desingnation %}
+                                <tr>
+                                    <td>{{d.state.name}}</td>
+                                    <td>{{d.district.name}}</td>
+                                    <td>{{d.constitution.name}}</td>
+                                    <td>{{d.name}}</td>
+                                    <td>
+                                        <span class="badge bg-danger"  style="cursor:pointer;" data-target="#delete_state{{c.id}}" data-toggle="modal">Delete</span>
+                                        <div class="modal fade" id="delete_state{{c.id}}">
+                                            <div class="modal-dialog modal-sm">
+                                              <div class="modal-content">
+                                                <div class="modal-body">
+                                                  <p class="py-3">Are you sure ! You want to Delete Desingnation <strong>{{d.name}}</strong></p>
+                                                  <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">No</button>
+                                                  <a  href="{% url 'delete_desingnation' id=d.id %}" class="btn btn-danger btn-sm">Yes</a>
+                                                </div>
+                                              </div>
+                                              <!-- /.modal-content -->
+                                            </div>
+                                            <!-- /.modal-dialog -->
+                                          </div>
+                                    </td>
+                                    
+                                </tr>
+                                {%endfor%}
+                            </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+     <!-- / Main content -->
+
+
+</div>
+
+{%endblock main_content %}
+{% block custom_js %}
+<script>
+    $(function () {
+        $("#desination_table").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+          })
+      });
+    $('#state_id').on('change', function(){
+    var state_id = this.value;
+        $.ajax({
+            url: "{% url 'fetch_district' %}",
+            type: "POST",
+            data: {
+              state_id: state_id
+            },
+            cache: false,
+            success: function(result){
+                const data = JSON.parse(result)
+                let html_data = '<option value="" disabled Selected>Select District</option>';
+                data.forEach(function (data) {
+                    html_data += `<option value="${data.id}">${data.name}</option>`
+                });
+                $("#district_id").html(html_data);
+                $("#constitution_id").html('<option value="" disabled Selected>Select District First </option>');
+                
+            }
+
+        });
+    });
+
+    $('#district_id').on('change', function(){
+    var district_id = this.value;
+        $.ajax({
+            url: "{% url 'fetch_constitution' %}",
+            type: "POST",
+            data: {
+                district_id: district_id
+            },
+            cache: false,
+            success: function(result){
+                const data = JSON.parse(result)
+                let html_data = '<option value="" disabled Selected>Select Constitution</option>';
+                data.forEach(function (data) {
+                    html_data += `<option value="${data.id}">${data.name}</option>`
+                });
+                $("#constitution_id").html(html_data);
+                
+            }
+
+        });
+    });
+  
+</script>
+{% endblock custom_js %}
+

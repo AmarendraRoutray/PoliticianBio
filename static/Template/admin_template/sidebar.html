@@ -1,0 +1,130 @@
+{% load static %}
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+  <!-- Brand Logo -->
+  <a href="index3.html" class="brand-link">
+    <img src="{% static 'logo.png' %}" alt="AdminLTE Logo" class="brand-image elevation-3" style="opacity: .8">
+    <span class="brand-text font-weight-light">Politicain Bio</span>
+  </a>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <!-- Sidebar user panel (optional) -->
+    <!-- <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+      <div class="image">
+        <img src="" class="img-circle elevation-2" alt="User Image">
+      </div>
+      <div class="info">
+        <a href="#" class="d-block"></a>
+      </div>
+    </div> -->
+
+    <!-- SidebarSearch Form -->
+    <!-- <div class="form-inline">
+      <div class="input-group" data-widget="sidebar-search">
+        <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
+        <div class="input-group-append">
+          <button class="btn btn-sidebar">
+            <i class="fas fa-search fa-fw"></i>
+          </button>
+        </div>
+      </div>
+    </div> -->
+
+    <!-- Sidebar Menu -->
+    <nav class="mt-2">
+      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <!-- Add icons to the links using the .nav-icon class
+             with font-awesome or any other icon font library -->
+
+        <li class="nav-item">
+          {% url 'admin_dashboard' as admin_dashboard %}
+          <a href="{{admin_dashboard}}" class="nav-link {% if request.path == admin_dashboard %}active{%endif%}">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>
+              Dashboard
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          {% url 'states' as states %}
+          <a href="{{states}}" class="nav-link {% if request.path == states %}active{%endif%}">
+            <i class="nav-icon fas fa-circle"></i>
+            <p>
+              States
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          {% url 'district' as district %}
+          <a href="{{district}}" class="nav-link {% if request.path == district %}active{%endif%}">
+            <i class="nav-icon fas fa-circle"></i>
+            <p>
+              District
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          {% url 'constitution' as constitution %}
+          <a href="{{constitution}}" class="nav-link {% if request.path == constitution %}active{%endif%}">
+            <i class="nav-icon fas fa-circle"></i>
+            <p>
+              Constitution
+            </p>
+          </a>
+        </li>
+        </li>
+        <li class="nav-item">
+          {% url 'desingnation' as desingnation %}
+          <a href="{{desingnation}}" class="nav-link {% if request.path == desingnation %}active{%endif%}">
+            <i class="nav-icon fas fa-circle"></i>
+            <p>
+              Desingnation
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          {% url 'politician' as politician %}
+          {% url 'view_politician' as view_politician %}
+          <a href=""
+            class="nav-link {% if request.path == politician %}active{%endif%}{% if request.path == view_politician %}active{%endif%}">
+            <i class="nav-icon fas fa-user-friends"></i>
+            <p>
+              Politician
+              <i class="fas fa-angle-left right"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{{politician}}" class="nav-link {% if request.path == politician %}active{%endif%}">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>
+                  Add Politician
+                </p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{view_politician}}" class="nav-link {% if request.path == view_politician %}active{%endif%}">
+                <i class="far fa-circle nav-icon"></i>
+                <p>View Politicain</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          {% url 'advertise_image_slider' as advertise_image_slider %}
+          <a href="{{advertise_image_slider}}"
+            class="nav-link {% if request.path == advertise_image_slider %}active{%endif%}">
+            <i class="nav-icon fas fa-circle"></i>
+            <p>
+              Advertisement
+            </p>
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+  </div>
+  <!-- /.sidebar -->
+</aside>

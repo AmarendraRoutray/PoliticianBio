@@ -1,0 +1,161 @@
+{% extends 'admin_template/base.html' %}
+
+{% load static %}
+
+{% block page_title %}Create District{% endblock page_title %}
+  
+{% block main_content %}
+
+    <!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+    
+    </div>
+    <!-- /.content-header -->
+  
+    <!-- Main content -->
+    <div class="content">
+        <div class="container">
+            {% include 'admin_template/alert_msg.html'%}
+
+            <div class="row">
+            
+                <div class="col-sm-6">
+
+                    <div class="card">
+                        <div class="card-header">
+                        <h5>Add a new Politician Category</h5>
+                        </div>
+                        <div class="card-body">
+                        <form action="{% url 'create_district' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group ">
+                                <label class="">Select State Name</label>
+                                <select name="state_id" class="form-control"  required>
+                                    <option disabled selected>Select State</option>
+                                    {% for s in state %}
+                                    <option value="{{s.id}}">{{s.name}}</option>
+                                    {% endfor %}
+                                </select>   
+                            </div>
+                            <div class="form-group ">
+                                <label class=""> District Name</label>
+                                <input type="text" name="district" class="form-control" placeholder="Enetr Politician Category Name" required>
+                            </div>
+                        <center><button type="submit" class="btn btn-primary" id="" >Add District</button></center>
+                            </form>
+                        </div>
+                        
+                        
+                
+                
+                </div>
+                </div>
+                <div class="col-sm-6"></div>
+            </div>
+
+            <div class="row pr-1">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <table id="state_table" class="table table-hover table-bordered ">
+                            <thead>
+                            <tr>
+                            <th>State Name</th>
+                            <th>District Name</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {%  for d in district %}
+                                <tr>
+                                    <td>{{d.state.name}}</td>
+                                    <td>{{d.name}}</td>
+                                    <td>
+                                        <span class="badge bg-primary"  style="cursor:pointer;" data-target="#edit_state{{d.id}}" data-toggle="modal">Edit</span>
+                                        <div class="modal fade" id="edit_state{{d.id}}">
+                                            <div class="modal-dialog">
+                                              <div class="modal-content">
+                                                <div class="modal-body">
+                                                    <div class="card">
+                                                        <div class="card-header">
+                                                        <h5>Edit District <strong>{{d.name}}</strong></h5>
+                                                        </div>
+                                                        <div class="card-body">
+                                                        <form action="{% url 'update_district' %}" method="POST">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" value="{{d.id}}" name="edit_district_id">
+                                                            <div class="form-group ">
+                                                                <label class="">Select State Name</label>
+                                                                <select name="edit_state_id" class="form-control"  required>
+                                                                    <option disabled selected>Select State</option>
+                                                                    {% for s in state %}
+                                                                    <option value="{{s.id}}" {% if d.state.id == s.id %}selected{% endif %}>{{s.name}}</option>
+                                                                    {% endfor %}
+                                                                </select>   
+                                                            </div>
+                                                            <div class="form-group ">
+                                                                <label class=""> District Name</label>
+                                                                <input type="text" name="edit_district" class="form-control" value="{{d.name}}" placeholder="Enetr Politician Category Name" required>
+                                                            </div>
+                                                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-success btn-sm">Update</button>
+                                                        </form>
+                                                        </div>
+                                                    </div>
+                                                  
+                                                </div>
+                                                
+                                              </div>
+                                              <!-- /.modal-content -->
+                                            </div>
+                                            <!-- /.modal-dialog -->
+                                          </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-danger"  style="cursor:pointer;" data-target="#delete_state{{d.id}}" data-toggle="modal">Delete</span>
+                                        <div class="modal fade" id="delete_state{{d.id}}">
+                                            <div class="modal-dialog modal-sm">
+                                              <div class="modal-content">
+                                                <div class="modal-body">
+                                                  <p class="py-3">Are you sure ! You want to Delete District <strong>{{d.name}}</strong></p>
+                                                  <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">No</button>
+                                                  <a  href="{% url 'delete_district' id=d.id %}" class="btn btn-danger btn-sm">Yes</a>
+                                                </div>
+                                                
+                                              </div>
+                                              <!-- /.modal-content -->
+                                            </div>
+                                            <!-- /.modal-dialog -->
+                                          </div>
+                                    </td>
+                                    
+                                </tr>
+                                {%endfor%}
+                            </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+     <!-- / Main content -->
+
+
+</div>
+
+{%endblock main_content %}
+{% block custom_js %}
+<script>
+    $(function () {
+        $("#state_table").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+          })
+      });  
+</script>
+{% endblock custom_js %}
+

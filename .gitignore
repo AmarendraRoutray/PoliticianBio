@@ -1,0 +1,12 @@
+#DailyCarWash/settings.py
+PoliticianBio/.env
+media/*
+PoliticianBio/PoliticianBio/__pycache__/
+Admin_App/__pycache__/
+Auth_App/__pycache__/
+User_App/__pycache__/
+Admin_App/migrations/__pycache__/
+Auth_App/migrations/__pycache__/
+User_App/migrations/__pycache__/
+.vscode/
+

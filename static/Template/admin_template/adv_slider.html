@@ -1,0 +1,92 @@
+{% extends 'admin_template/base.html' %}
+
+{% load static %}
+
+{% block page_title %} {{politician.name}} Images Slider{% endblock page_title %}
+  
+{% block main_content %}
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        
+      </div>
+      <!-- /.content-header -->
+  
+      <!-- Main content -->
+      <div class="content">
+        <div class="container">
+          {% include 'admin_template/alert_msg.html' %}
+            <div class="row">
+                <div class="col-md-12">
+                  <div class="card card-default">
+                    <div class="card-header">
+                      <h3 class="card-title">Slider For Advertisement</h3>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'save_advertise_image_slider' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-group">
+                              <label> Choose Image</label>
+                              <input type="file" name="adv_img" class="form-control"  multiple>
+                            </div>
+                            {% if adv_img_count == 6 %}
+                            <center><code><strong>Already 6 Images Exists</strong> Delete image to upload again</code></center>
+                            {%else%}
+                            <button type="submit" class="btn btn-primary" >Upload</button>
+                            {%endif%}
+                         
+                      </form> 
+                    </div>
+                    <!-- /.card-body -->
+                  </div>
+                  <!-- /.card -->
+
+                  
+                </div>
+              </div>
+              <!-- /.row -->
+
+              <div class="row">
+                {% for p in adv_img %}
+                    {% if forloop.counter0|divisibleby:3 %}
+                        </div><div class="row">
+                    {% endif %}
+                        <div class="col-sm-4">
+                          <div class="card">
+                            <div class="card-header">
+                           <i class="fas fa-times-circle float-right text-danger" data-toggle="modal" data-target="#adv_modal{{p.id}}" style="cursor: pointer;"></i>
+                           <!-- modal -->
+                           <div class="modal fade" id="adv_modal{{p.id}}">
+                            <div class="modal-dialog modal-sm">
+                              <div class="modal-content">
+                                <div class="modal-body">
+                                  <p class="py-3">Are you sure ! You want to Delete</p>
+                                  <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">No</button>
+                                  <a  href="{% url 'delete_advertise_image_slider' id=p.id %}" class="btn btn-danger btn-sm">Yes</a>
+                                </div>
+                                
+                              </div>
+                              <!-- /.modal-content -->
+                            </div>
+                            <!-- /.modal-dialog -->
+                          </div>
+                            </div>
+                            <div class="card-body">
+                              <img src="{{p.image.url}}" class="img-fluid" alt='{{p.image}}'>  
+                            </div>
+                          </div> 
+                        </div>
+                {% endfor %}
+                </div>
+        </div>
+      </div>    
+</div>
+
+{%endblock main_content %}
+
+{%block custom_js %}
+<script>
+</script>
+{%endblock custom_js %}

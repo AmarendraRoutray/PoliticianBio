@@ -1,0 +1,134 @@
+{% extends 'admin_template/base.html' %}
+
+{% load static %}
+
+{% block page_title %}Create State{% endblock page_title %}
+  
+{% block main_content %}
+
+    <!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+   
+    </div>
+    <!-- /.content-header -->
+  
+    <!-- Main content -->
+    <div class="content">
+        <div class="container">
+            {% include 'admin_template/alert_msg.html'%}
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="card">
+                        <div class="card-header">
+                        <h5>Add a new State</h5>
+                        </div>
+                        <div class="card-body">
+                        <form action="{% url 'create_state' %}" method="POST">
+                            {% csrf_token %}
+                        <div class="form-group ">
+                                <label class=""> State Name</label>
+                                <input type="text" name="state_name" class="form-control" placeholder="Enetr State Name" required>
+                            </div>
+                        <center><button type="submit" class="btn btn-primary" id="" >Add State</button></center>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6"></div>
+            </div>
+
+            <div class="row pr-1">
+                <div class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <table id="state_table" class="table table-hover table-bordered ">
+                            <thead>
+                            <tr>
+                            <th>Name</th>
+                            <th>Edit</th>
+                            <th>Delete</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {%  for s in state %}
+                                <tr>
+                                    <td>{{s.name}}</td>
+                                    <td>
+                                        <span class="badge bg-primary"  style="cursor:pointer;" data-target="#edit_state{{s.id}}" data-toggle="modal">Edit</span>
+                                        <div class="modal fade" id="edit_state{{s.id}}">
+                                            <div class="modal-dialog">
+                                              <div class="modal-content">
+                                                <div class="modal-body">
+                                                    <div class="card">
+                                                        <div class="card-header">
+                                                        <h5>Edit State <strong>{{s.name}}</strong></h5>
+                                                        </div>
+                                                        <div class="card-body">
+                                                        <form action="{% url 'update_state' %}" method="POST">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" value="{{s.id}}" name="edit_state_id">
+                                                            <div class="form-group ">
+                                                                <label class=""> State Name</label>
+                                                                <input type="text" name="edit_state_name" class="form-control" value="{{s.name}}" placeholder="Enetr State Name" required>
+                                                            </div>
+                                                            <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-success btn-sm">Update</button>
+                                                        </form>
+                                                        </div>
+                                                    </div>
+                                                  
+                                                </div>
+                                                
+                                              </div>
+                                              <!-- /.modal-content -->
+                                            </div>
+                                            <!-- /.modal-dialog -->
+                                          </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="badge bg-danger"  style="cursor:pointer;" data-target="#delete_state{{s.id}}" data-toggle="modal">Delete</span>
+                                        <div class="modal fade" id="delete_state{{s.id}}">
+                                            <div class="modal-dialog modal-sm">
+                                              <div class="modal-content">
+                                                <div class="modal-body">
+                                                  <p class="py-3">Are you sure ! You want to Delete State <strong>{{s.name}}</strong></p>
+                                                  <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">No</button>
+                                                  <a  href="{% url 'delete_state' id=s.id %}" class="btn btn-danger btn-sm">Yes</a>
+                                                </div>
+                                                
+                                              </div>
+                                              <!-- /.modal-content -->
+                                            </div>
+                                            <!-- /.modal-dialog -->
+                                          </div>
+                                    </td>
+                                    
+                                </tr>
+                                {%endfor%}
+                            </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+     <!-- / Main content -->
+
+
+</div>
+
+{%endblock main_content %}
+{% block custom_js %}
+<script>
+    $(function () {
+        $("#state_table").DataTable({
+            "responsive": true, "lengthChange": false, "autoWidth": false,
+          })
+      });  
+</script>
+{% endblock custom_js %}
+

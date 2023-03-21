@@ -1,0 +1,550 @@
+{% extends 'user_template/base.html' %}
+{% load static %}
+
+{% block fb_share %}
+<meta property="og:title" content="{{poli.name}}" />
+<meta name="og:image" content="{{DOMAIN}}{{poli.profile.url}}" />
+<meta name="og:description" content="{{poli.desc|striptags|safe |truncatechars:200 }}" />
+<meta name="og:url" content="{{DOMAIN}}{% url 'politician_details' id=poli.id %}" />
+<meta property="og:type" content="website" />
+{% endblock fb_share %}
+
+{% block title %} {{poli.name}}{% endblock title%}
+
+{% block main_content %}
+
+
+<div id="google_translate_element" style="float: right; margin-top: 10px; margin-right: 10px;"></div>
+<main class="page-content">
+  <div class="container-fluid slide-fluid">
+    <div class="row">
+      <div class="col-sm-12">
+        {% if img_slider_count != 0%}
+        <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel" style="position:relative;">
+          <ol class="carousel-indicators">
+            {% for im in img_slider %}
+            <li data-target="#carouselExampleIndicators" data-slide-to="{{forloop.counter0}}"
+              class="{% if forloop.counter0 == 0 %}active{%endif%}"
+              style="background-color:#007bff;width:10px;height: 10px; border-radius: 50%;"></li>
+            {% endfor %}
+          </ol>
+          <div class="carousel-inner">
+            {% for im in img_slider %}
+            <div class="carousel-item {% if forloop.counter0 == 0 %}active{%endif%}">
+              <img class="d-block carousel_item_img" style="cursor: pointer;" src="{{im.image.url}}" data-toggle="modal"
+                data-target="#modal-img{{im.id}}">
+              <div class="modal fade" id="modal-img{{im.id}}">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+
+                    <span aria-hidden="true" class="text-center pt-2"><i class="fas fa-times-circle fa-2x text-primary"
+                        class="close" data-dismiss="modal" aria-label="Close" style="cursor: pointer;"></i></span>
+
+                    <div class="modal-body">
+                      <img class="" src="{{im.image.url}}" style="width:100%; height: 100hv;">
+                    </div>
+                  </div>
+                  <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+              </div><!-- /.modal -->
+            </div><!-- /.coursel item-->
+            {%endfor%}
+          </div>
+          <div class="profile_poli_nav_coursel">
+            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev"
+              style="opacity:1 !important">
+              <span class="" aria-hidden="true"><i class="fas fa-chevron-circle-left  fa-2x text-primary"></i></span>
+              <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next"
+              style="opacity:1 !important">
+              <span class="" aria-hidden="true"><i class="fas fa-chevron-circle-right fa-2x text-primary"></i></span>
+              <span class="sr-only">Next</span>
+            </a>
+          </div>
+        </div>
+        {%endif%}
+        <figure class="rounded-circle p-1 profile_pic_poli">
+          <img src="{{poli.profile.url}}" class="rounded-circle">
+        </figure>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid slide-fluid">
+    <!-- image slider row -->
+    <div class="row">
+      <div class="col-md-6">
+        <!-- video slider -->
+        {% if video_slider_count != 0 %}
+        <div class="card my-3">
+          <div class="card-body p-0">
+            <div id="carouselVideoIndicators" class="carousel slide" data-interval="false" data-ride="carousel">
+
+              <ol class="carousel-indicators" style="bottom: -50px!important;">
+                {% for vs in video_slider %}
+                <li data-target="#carouselVideoIndicators" data-slide-to="{{forloop.counter0}}"
+                  class="{% if forloop.counter0 == 0 %}active{%endif%}"
+                  style="background-color:#007bff;width:10px;height: 10px; border-radius: 50%;"></li>
+                {% endfor %}
+              </ol>
+
+              <div class="carousel-inner">
+                {% for v in video_slider %}
+                <div class="carousel-item {% if forloop.counter0 == 0 %}active{%endif%}">
+                  <iframe width="100%" height="200" src="{{v.video}}" title="YouTube video player" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+                </div>
+                {%endfor%}
+              </div>
+
+              <!-- <a class="carousel-control-prev" href="#carouselVideoIndicators" role="button" data-slide="prev" style="width:50% !important;top:110% !important;">
+                  <span class="" aria-hidden="true"><i class="fas fa-chevron-circle-left text-primary fa-2x"></i></span>
+                  <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselVideoIndicators" role="button" data-slide="next" style="width:50% !important;top:110% !important;">
+                  <span class="" aria-hidden="true"><i class="fas fa-chevron-circle-right text-primary fa-2x"></i></span>
+                  <span class="sr-only">Next</span>
+                </a> -->
+            </div>
+          </div>
+        </div>
+        {%endif%}
+        <!-- end video slider -->
+
+        <!-- like section -->
+        <div class="pt-4">
+          {% if request.user.is_authenticated%}
+          {% if is_like %}
+          <button class="" style="background-color: transparent;border: none; outline: none;" id="do_like"
+            value="{{request.user.id}}"> <i class="far fa-thumbs-up weight_theme_color" id="do_like_far"
+              style="font-size: 25px !important;"></i></button><span id="tot_like">{{total_likes}}</span>
+          {%else%}
+          <button class="" style="background-color: transparent;border: none; outline: none;" id="do_like"
+            value="{{request.user.id}}"> <i class="far fa-thumbs-up theme_color" id="do_like_far"
+              style="font-size: 25px !important;"></i></button><span id="tot_like">{{total_likes}}</span>
+          {%endif%}
+
+          {% if is_dislike %}
+          <button class="ml-2" style="background-color: transparent;border: none; outline: none;" id="do_dislike"
+            value="{{request.user.id}}"> <i class="far fa-thumbs-down weight_theme_color" id="do_dislike_far"
+              style="font-size: 25px !important;"></i></button><span id="tot_dislike">{{total_dislikes}}</span>
+          {%else%}
+          <button class="ml-2 " style="background-color: transparent;border: none; outline: none;" id="do_dislike"
+            value="{{request.user.id}}"> <i class="far fa-thumbs-down theme_color" id="do_dislike_far"
+              style="font-size: 25px !important;"></i></button><span id="tot_dislike">{{total_dislikes}}</span>
+          {%endif%}
+
+          <!-- if user is not authenitcate the show below else part -->
+          {%else%}
+          <span class="btn btn-default" style="outline: none; border:none;" data-toggle="modal"
+            data-target="#modal-login" data-backdrop="static" data-keyboard="false"><i
+              class="far fa-thumbs-up theme_color" style="font-size: 25px !important;"></i> {{total_likes}}</span> <span
+            data-toggle="modal" style="outline: none; border:none;" data-target="#modal-login" data-backdrop="static"
+            data-keyboard="false" class="btn btn-default"><i class="far fa-thumbs-down theme_color"
+              style="font-size: 25px !important;"></i> {{total_dislikes}} </span>
+          <!--    login modal  -->
+
+          <div class="modal fade" id="modal-login">
+            <div class="modal-dialog">
+              <div class="modal-content">
+
+                <div class="modal-header py-2">
+                  <h4 class="modal-title" id="login_modal_title">Login To Continue</h4>
+                  <i type="button" class="close fas fa-times-circle" data-dismiss="modal" aria-label="Close">
+                  </i>
+                </div>
+                <div class="modal-body pb-5">
+
+                  <div id="signin" class="px-4">
+                    <div class="form-group" id="login_error">
+                      <label>Email</label>
+                      <input type="email" name="email" id="login_email" class="form-control" placeholder="Enter Email"
+                        autocomplete="off">
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>Password</label>
+                      <input type="password" name="password" id="login_password" class="form-control" placeholder="Enter Password"
+                        autocomplete="off">
+                    </div>
+                    <center><button type="button" id="login_user" disabled
+                        class="btn btn-primary btn-sm px-3 mb-4">Login</button></center>
+                    <center>Create Account <i id="regi"
+                        style="text-align:center; color: rgb(15, 113, 224); cursor: pointer;">Signup</i></center>
+                  </div>
+                  <div id="signup" class="px-4" style="display: none;">
+                    <div class="form-group">
+                      <label>Name</label>
+                      <input type="text" name="name" id="name" class="form-control" placeholder="Enter Name">
+                    </div>
+                    <div class="form-group" id="signup_error">
+                      <label>Email</label>
+                      <input type="email" name="email" id="signup_email" class="form-control" placeholder="Enter Email">
+                    </div>
+                    <div class="form-group" id="signup_error">
+                      <label>Password</label>
+                      <input type="password" name="password" id="signup_password" class="form-control"
+                        placeholder="Enter Password">
+                    </div>
+                    <center><button type="button" id="add_user"
+                        class="btn btn-primary btn-sm px-3 mb-4">Continue</button></center>
+                    <center>Already have a Account <i id="logi"
+                        style="text-align:center; color: rgb(23, 116, 238); cursor: pointer;">Login</i></center>
+                  </div>
+                  <div id="otp_verify"></div>
+
+                  <div class="py-4">
+                    <h6>Privacy Policy:</h6>
+                    <p class="text-sm-left">Our Privacy Policy provides at the relevant and necessary information
+                      regarding how HML Group handle customer data in accordance with the Data Protection<a href="#"
+                        target="_blank"> read more.</a></p>
+                  </div>
+
+                </div>
+
+
+              </div>
+              <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+          </div>
+          <!-- end login modal -->
+          {%endif%}
+          <!-- end is_authenticated  -->
+          <button style="background-color: transparent; outline:none ;border:none; color:tomato;"
+            class="float-right copy_link" title="Copy Link">
+            <i class="fas fa-link theme_color" style="font-size: 25px !important;"></i>
+          </button>
+
+          <a href="https://www.facebook.com/sharer/sharer.php?u={{DOMAIN}}/politician/{{poli.id}}" class="float-right"
+            target="_blank" title="Share on Facebook">
+            <i class="fab fa-facebook-square"
+              style="font-size: 25px !important; margin-right:15px; color: rgb(9, 86, 228);"></i>
+          </a>
+          <a href="https://twitter.com/intent/tweet?text={{DOMAIN}}/politician/{{poli.id}}" class="float-right"
+            target="_blank" title="Share on Twitter">
+            <i class="fab fa-twitter-square"
+              style="font-size: 25px !important; margin-right:15px; color: rgb(23, 148, 211)"></i>
+          </a>
+          <a href="whatsapp://send?text={{DOMAIN}}/politician/{{poli.id}}" class="float-right"
+            data-action="share/whatsapp/share"
+            onClick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return flase;"
+            target="_blank" title="Share on whatsapp"><i class="fab fa-whatsapp-square"
+              style="font-size: 25px !important; margin-right:15px; color: rgb(38, 205, 38)"></i>
+          </a>
+        </div>
+        <!-- end like section -->
+
+
+      </div>
+      <!-- col-md-6 end -->
+      <div class="col-md-6 poli_party">
+        <div style="position:relative; top:10px;">
+          <div class="row">
+            <div class="col-10">
+              <h5 style="font-size: 25px; line-height:inherit;"><strong>{{poli.name}}</strong></h5>
+            </div>
+            <div class="col-2">
+              {% if poli.party_logo %}<img src="{{poli.party_logo.url}}" class="rounded-circle border border-primary"
+                width="50px" height="50px">{% endif %}
+            </div>
+          </div>
+
+          <li><span style="font-weight:600;">State</span>: {{poli.state.name}}</li>
+          <li><span style="font-weight:600;">District</span>: {{poli.district.name}}</li>
+          <li><span style="font-weight:600;">Constituency</span>: {{poli.constitution.name}}</li>
+          <li><span style="font-weight:600;">Designation</span>: {{poli.desingnation.name}}</li>
+          <marquee
+            style="background-color:black; color:#fff; padding:5px; font-size:1rem; margin-top:10px; border-radius: 10px 0px 10px 0px;"
+            behavior="scroll" direction="left">
+            ଆମ ୱେବ୍ସାଇଟ ଲୋକଙ୍କ ଖରାପ କମେଣ୍ଟ ପାଇଁ ଦାୟୀ ନୁହେଁ | ଏଣୁ ଜନତାଙ୍କୁ ଅନୁରୋଧ କୌଣସି ଅଶାଳୀନ ବ୍ୟବହାର ରଖିବେ ନାହିଁ....ଏ
+            ୱେବ୍ସାଇଟ ଆପଣଙ୍କ ପାଇଁ ଉଦ୍ଧିଷ୍ଟ ତେଣୁକରି ଆପଣ ଏହାପ୍ରତି ଯତ୍ନବାନ ହୁଅନ୍ତୁ...ଏବଂ ନିଜ ଅଭିଯୋଗ ଶାଳୀନତା ସହ ରଖିବା ପାଇଁ
+            ଅନୁରୋଧ
+          </marquee>
+        </div>
+      </div>
+    </div>
+    <!--end row -->
+  </div>
+
+  <div class="container-fluid">
+    <!-- description start -->
+    <div class="row my-2">
+      <div class="col-sm-12">
+        <div class="no__select">
+          {{poli.desc|safe}}
+        </div>
+      </div>
+    </div>
+    <!-- description end -->
+    <hr>
+    <div class="row">
+      <!-- comments section start -->
+
+      <div class="col-md-6">
+        <h5 class="py-2" style="font-weight: 600; font-size: 16px;">
+          <span class="blink_text">ଏଠାରେ ନିଜର ଆପତ୍ତି ଓ ଅଭିଯୋଗ ମଧ୍ୟ ରଖିପାରିବେ</span> <span
+            style="color:#7e1e34;font-weight: 800; font-size: 18px;">{{comment_count}}</span>
+        </h5>
+        {% if request.user.is_authenticated %}
+
+        <div class="float-left text-uppercase">
+          {% if request.user.profile %}
+          <img src="{{request.user.profile}}" alt="img" class="rounded-circle border border-primary" width="40px"
+            height="40px">
+          {% else %}
+          <span
+            style="border:2px solid rgb(102, 102, 105); padding: 0 8px; border-radius: 50%; font-size: 20px; font-weight: 700;background: linear-gradient(36deg, #f91441, #212529); color: #fff;">{{request.user.name|first}}</span>
+          {% endif %}
+        </div>
+
+        <div style="padding-left: 50px;">
+          <form action="{% url 'add_comment' %}" method="POST" enctype="multipart/form-data">
+            <textarea name="comment_text" class="comment_text" id="comment_text" row='1'
+              placeholder="Add Comments ..."></textarea>
+            <div>
+              <div id="com_image_div" style="display: none; margin-left:20px;">
+                <label for="">Upload Image</label>
+                <input class="form-control" type="file" name="comment_image"
+                  accept="image/png, image/gif, image/jpeg, image/jpg">
+              </div>
+
+              <div id="cancel_div" style="display: none;margin-left:20px;">
+                <input type="hidden" name="user_id" value="{{request.user.id}}">
+                <input type="hidden" name="poli_id" value="{{poli.id}}">
+                {% csrf_token %}
+                <button type="button" id="cancel_btn" class="mt-2">Cancel</button>
+                <button type="submit" class="mt-2"
+                  style="background-color: rgb(26 115 210); color: rgb(255, 255, 255);">Comment</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        {%else%}
+
+        <div style="padding-left: 50px;">
+          <input type="text" id="comment_notlogin" placeholder="Add comments .....">
+        </div>
+        {%endif%}
+
+        <!-- all comments -->
+        <div class="row mt-2">
+          <div class="col-md-12">
+            {% for com in all_comments %}
+            {% if request.user.id == com.customuser.id %}
+            <div class="row my-2">
+              <div class="col-sm-12">
+
+                <div class="float-left text-uppercase">
+                  {% if com.customuser.profile %}
+                  <img src="{{com.customuser.profile}}" alt="img" class="rounded-circle border border-primary"
+                    width="40px" height="40px">
+                  {% else %}
+                  <span
+                    style="border:2px solid rgb(102, 102, 105); padding: 0 9px; border-radius: 50%; font-size: 20px; font-weight: 700;background: linear-gradient(36deg, #f91441, #212529); color: #fff;">{{com.customuser.name|first}}</span>
+                  {%endif%}
+                </div>
+
+
+                <div style=" padding-left:50px;">
+                  <span
+                    style="color: rgb(50, 50, 51); font-size: 16px; font-weight: 700;text-transform: capitalize;">{{com.customuser.name}}</span><br>
+                  <span
+                    style="font-weight: 400; font-size: 14px; padding-left: 0px; margin-top: 10px; font-style: italic;">
+                    Publish: {{com.created_at}}</span> {% if com.customuser.id == request.user.id%}<i
+                    class="fas fa-trash float-right ml-3" data-target="#modal-del-comment{{im.id}}" data-toggle="modal"
+                    style="cursor: pointer; color: rgb(177, 6, 28);"></i><i class="fas fa-edit float-right"
+                    data-target="#modal-comment{{im.id}}" data-toggle="modal"
+                    style="cursor: pointer; color: dodgerblue;"></i>
+                  <!-- start modal -->
+                  <div class="modal fade" id="modal-comment{{im.id}}">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="card-header">
+                          <h5 class="float-left">Edit Comment</h5>
+                          <span aria-hidden="true" class="float-right"><i class="fas fa-times-circle fa-2x text-primary"
+                              class="close" data-dismiss="modal" aria-label="Close" style="cursor: pointer;"></i></span>
+                        </div>
+
+                        <div class="modal-body">
+                          <div class="form-group">
+                            <input type="hidden" id="comment_id" value="{{com.id}}">
+                            <label for="">Comment</label>
+                            <textarea class="form-control" rows="5" name="updated_commment"
+                              id="updated_comment">{{com.text}}</textarea>
+                          </div>
+                          <center><button class="btn btn-success btn-sm px-3" id="update_com_btn">Update</button>
+                          </center>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- end modal -->
+                  <!-- start modal -->
+                  <div class="modal fade" id="modal-del-comment{{im.id}}">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="card-header">
+                          <h5 class="float-left">Delete Comment</h5>
+                          <span aria-hidden="true" class="float-right"><i class="fas fa-times-circle fa-2x text-danger"
+                              class="close" data-dismiss="modal" aria-label="Close" style="cursor: pointer;"></i></span>
+                        </div>
+
+                        <div class="modal-body">
+                          <p>Are You Sure . You Want to delete Comment !</p>
+                          <center><button class="btn btn-danger btn-sm px-3" value="{{com.id}}"
+                              id="delete_com_btn">Delete</button></center>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- end modal -->
+                  {%endif%}
+                  <div>
+                    {% if com.image != "" %}
+                    <figure style="margin:10px 0;">
+                      <img src="{{com.image.url}}" alt="" class="img-thumbnail">
+                    </figure>
+                    {%endif%}
+                    <p class="py-2" style="color: #495057;font-family: sans-serif;">
+                      {{com.text}}
+                    </p>
+                  </div>
+
+
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {%endfor%}
+
+            <!--  ###################### other user -->
+
+
+            {% for com in all_comments %}
+            {% if request.user.id != com.customuser.id %}
+            <div class="row my-2">
+              <div class="col-sm-12">
+                <div class="float-left text-uppercase">
+                  {% if com.customuser.profile %}
+                  <img src="{{com.customuser.profile}}" alt="img" class="rounded-circle border border-primary"
+                    width="40px" height="40px">
+                  {% else %}
+                  <span
+                    style="border:2px solid rgb(102, 102, 105); padding: 0 9px; border-radius: 50%; font-size: 20px; font-weight: 700;background: linear-gradient(36deg, #f91441, #212529); color: #fff;">{{com.customuser.name|first}}</span>
+                  {%endif%}
+                </div>
+                <div style=" padding-left:50px;">
+                  <span
+                    style="color: rgb(50, 50, 51); font-size: 16px; font-weight: 700;text-transform: capitalize;">{{com.customuser.name}}</span><br>
+                  <span
+                    style="font-weight: 400; font-size: 14px; padding-left: 0px; margin-top: 10px; font-style: italic;">
+                    Publish: {{com.created_at}}</span> {% if com.customuser.id == request.user.id%}<i
+                    class="fas fa-trash float-right ml-3" data-target="#modal-del-comment{{im.id}}" data-toggle="modal"
+                    style="cursor: pointer; color: rgb(177, 6, 28);"></i><i class="fas fa-edit float-right"
+                    data-target="#modal-comment{{im.id}}" data-toggle="modal"
+                    style="cursor: pointer; color: dodgerblue;"></i>
+                  <!-- start modal -->
+                  <div class="modal fade" id="modal-comment{{im.id}}">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="card-header">
+                          <h5 class="float-left">Edit Comment</h5>
+                          <span aria-hidden="true" class="float-right"><i class="fas fa-times-circle fa-2x text-primary"
+                              class="close" data-dismiss="modal" aria-label="Close" style="cursor: pointer;"></i></span>
+                        </div>
+
+                        <div class="modal-body">
+                          <div class="form-group">
+                            <input type="hidden" id="comment_id" value="{{com.id}}">
+                            <label for="">Comment</label>
+                            <textarea class="form-control" rows="5" name="updated_commment"
+                              id="updated_comment">{{com.text}}</textarea>
+                          </div>
+                          <center><button class="btn btn-success btn-sm px-3" id="update_com_btn">Update</button>
+                          </center>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- end modal -->
+                  <!-- start modal -->
+                  <div class="modal fade" id="modal-del-comment{{im.id}}">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="card-header">
+                          <h5 class="float-left">Delete Comment</h5>
+                          <span aria-hidden="true" class="float-right"><i class="fas fa-times-circle fa-2x text-danger"
+                              class="close" data-dismiss="modal" aria-label="Close" style="cursor: pointer;"></i></span>
+                        </div>
+
+                        <div class="modal-body">
+                          <p>Are You Sure . You Want to delete Comment !</p>
+                          <center><button class="btn btn-danger btn-sm px-3" value="{{com.id}}"
+                              id="delete_com_btn">Delete</button></center>
+                        </div>
+                      </div>
+                      <!-- /.modal-content -->
+                    </div>
+                    <!-- /.modal-dialog -->
+                  </div>
+                  <!-- end modal -->
+                  {%endif%}
+                  <div>
+                    {% if com.image != "" %}
+                    <figure style="margin:10px 0;">
+                      <img src="{{com.image.url}}" alt="" class="img-thumbnail">
+                    </figure>
+                    {%endif%}
+                    <p class="py-2" style="color: #495057;font-family: sans-serif;">
+                      {{com.text}}
+                    </p>
+                  </div>
+
+
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            {%endfor%}
+
+          </div>
+        </div>
+        <!-- end all comments -->
+      </div>
+
+      <!-- end comment section end -->
+
+      <div class="col-md-6">
+        <!-- recommended politician -->
+        <p>Recommended Politician</p>
+        {% for r in recomonded_politician %}
+        <div class="card shadow px-3 py-2 mb-3 bg-white rounded" style="background-color: #e9e9ee!important;">
+          <div class="poli_card_body">
+            <div>
+              <img class="poli_img" src="{{r.profile.url}}">
+            </div>
+            <a href="{% url 'politician_details' id=r.id %}">{{r.name}}</a>
+            <span>{{r.state.name}}</span>
+          </div>
+        </div>
+        {% endfor %}
+        <!-- end recomonded politician -->
+      </div>
+
+    </div><!-- end row-->
+
+  </div><!-- end conatiner-fluid-->
+  {% include 'user_template/footer.html' %}
+
+</main>
+{% endblock main_content %}

@@ -1,0 +1,110 @@
+{% extends 'admin_template/base.html' %}
+
+{% load static %}
+
+{% block page_title %} Profile{% endblock page_title %}
+  
+{% block main_content %}
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+       
+      </div>
+      <!-- /.content-header -->
+  
+      <!-- Main content -->
+      <div class="content">
+        <div class="container">
+            <div class="row">
+              <div class="col-md-12">
+
+                <!-- alert msg -->
+                {% include 'admin_template/alert_msg.html' %}
+                <!-- end alert msg -->
+                <!--  card -->
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Admin Profile</h3>
+                  </div>
+         
+                 
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <div class="card card-light">
+                            <div class="card-header">
+                              <h6>Change Password</h6>
+                            </div>
+                            <div class="card-body">
+                              <form action="{% url 'admin_change_password' %}" method="POST">
+                                {% csrf_token %}
+                              <div class="form-group">
+                                <label>Current Password</label>
+                                <input type="password" name="old_password" class="form-control" placeholder="Enter Current Password" required>
+                              </div>
+                              <div class="form-group">
+                                <label>New Password</label>
+                                <input type="password" name="new_password" class="form-control" placeholder="Enter New Password" required>
+                              </div>
+                              <div class="form-group">
+                                <label>New Confirm Password</label>
+                                <input type="text" name="new_c_password" class="form-control" placeholder="Enter New Confirm Password" required>
+                              </div>
+                              <center><button class="btn btn-success btn-sm">Change Password</button></center>
+                              </form>
+                            </div>
+                           </div>
+                        </div>
+                        <div class="col-sm-6">
+                          <div class="card card-light">
+                            <div class="card-header">
+                              <h6>Change Profile</h6>
+                            </div>
+                            <div class="card-body">
+                              <form action="{% url 'admin_change_email' %}" method="POST">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                  <label>New Name</label>
+                                  <input type="text" name="name" value="{{request.user.name}}" class="form-control" placeholder="Enter New Mobile" required>
+                                </div>
+                                <div class="form-group">
+                                  <label>New Optional Mobile</label>
+                                  <input type="text" name="change_email" value="{{request.user.email}}" class="form-control" placeholder="Enter New Optioanl Mobile" required>
+                                </div>
+                                <center><button class="btn btn-success btn-sm">Change Mobile</button></center>
+                              </form>
+                            </div>
+                           </div>
+                        </div>
+                      </div>
+      
+      
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+              </div>
+            </div>
+          </div>
+          <!-- /.row -->
+        </div>
+        <!-- /.container-fluid -->
+      </div>
+      <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+
+
+{% endblock main_content %}
+
+{% block custom_js %}
+      <script>
+        
+      
+      </script>
+{% endblock custom_js %}
+{% block custom_css %}
+
+{% endblock custom_css %}

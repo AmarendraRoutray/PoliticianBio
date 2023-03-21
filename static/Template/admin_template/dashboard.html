@@ -1,0 +1,100 @@
+{% extends 'admin_template/base.html' %}
+
+{% load static %}
+
+{% block page_title %} Dashboard{% endblock page_title %}
+  
+{% block main_content %}
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        
+      </div>
+      <!-- /.content-header -->
+  
+      <!-- Main content -->
+      <div class="content">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-6 col-6">
+              <!-- small box -->
+              <div class="small-box bg-success">
+                <div class="inner">
+                  <h3>{{no_of_user}}</h3>
+  
+                  <p>User</p>
+                </div>
+                <div class="icon">
+                  <i class="fas fa-users"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+  
+              
+              </div>
+            </div>
+
+            <div class="col-lg-6 col-6">
+              <!-- small box -->
+              <div class="small-box bg-primary">
+                <div class="inner">
+                  <h3>{{no_of_poli}}</h3>
+  
+                  <p>Politician</p>
+                </div>
+                <div class="icon">
+                  <i class="fas fa-user-tie"></i>
+                </div>
+                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+  
+              
+              </div>
+            </div>
+
+          </div>
+
+          <!-- row end -->
+          <div class="row">
+            {%for tp in top_poli %}
+            {% if forloop.counter0|divisibleby:2 %}
+                </div>
+              <div class="row">
+            {% endif %}
+            <div class="col-md-6">
+            <div class="card shadow px-3 py-2 mb-3 bg-white rounded">
+              <div class="py-1 px-2">
+              <img src="{{tp.profile.url}}" style="width: 50px; height: 50px; border:2px solid #3a66b6; border-radius:50%; float:left;">
+              <span class="badge badge-danger navbar-badge">{{forloop.counter}}</span>
+              <span style="float: left; margin-top: 10px;">
+              <a style=" padding-left: 10px; color:#3a66b6;font-size: 20px; font-weight: 500; text-decoration: none;" href="{% url 'about_politician' id=tp.id %}">{{tp.name}}</a>
+              <a style="  padding-bottom:0px ;padding-left: 10px;color:rgb(84, 86, 88);font-size: 15px; font-weight: 200;">{{tp.state.name}}</a>
+            </span>
+            </div>
+            </div>
+          </div>
+            {%endfor%}
+      
+    </div>
+            
+  
+        </div>
+        <!-- /.container-fluid -->
+      </div>
+      <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+
+
+{% endblock main_content %}
+
+{% block custom_js %}
+      <script>
+        
+      
+      </script>
+{% endblock custom_js %}
+{% block custom_css %}
+
+{% endblock custom_css %}

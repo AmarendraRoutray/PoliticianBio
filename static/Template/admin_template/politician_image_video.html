@@ -1,0 +1,227 @@
+{% extends 'admin_template/base.html' %}
+
+{% load static %}
+
+{% block page_title %} {{politician.name}} Images Slider{% endblock page_title %}
+  
+{% block main_content %}
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <ol class="breadcrumb">
+              <li class="breadcrumb-item active"><a href="{% url 'about_politician' id=politician.id %}"> <i class="fas fa-arrow-left"></i> {{politician.name}}</a></li>
+            </ol>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content-header -->
+  
+      <!-- Main content -->
+      <div class="content">
+        <div class="container">
+          {% include 'admin_template/alert_msg.html' %}
+            <div class="row">
+                <div class="col-md-6">
+                  <div class="card card-default">
+                    <div class="card-header">
+                      <h3 class="card-title">Image Slider For {{politician.name}}</h3>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'upload_image_slider' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="poli_id" value="{{politician.id}}">
+                            <div class="form-group">
+                              <label>Upload Images</label>
+                              <input type="file" name="image_slider" class="form-control"  multiple>
+                            </div>
+                            {% if img_slider_count == 6 %}
+                            <center><code><strong>Already 6 Images Exists</strong> Delete image to upload again</code></center>
+                            {%else%}
+                            <button type="submit" class="btn btn-primary" >Upload</button>
+                            {%endif%}
+                         
+                      </form> 
+                    </div>
+                    <!-- /.card-body -->
+                  </div>
+                  <!-- /.card -->
+
+                  
+                </div>
+                <div class="col-md-6">
+                  <div class="card card-default">
+                    <div class="card-header">
+                      <h3 class="card-title">Video Slider For {{politician.name}}</h3>
+                    </div>
+                    <div class="card-body">
+                        <form action="{% url 'upload_video_slider' %}" method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="poli_id" value="{{politician.id}}">
+                            <div id="first_video_input">
+                            <div class="form-group">
+                              <label>Upload Videos</label>
+                              <input type="text" name="video_slider" class="form-control" placeholder="Add Video Link">
+                            </div>
+
+                          </div>
+                            
+
+                            {% if img_video_count == 6 %}
+                            <button type="button" class="btn" id="addrow" style="background-color: #673ab7; padding:5px 20px; color:#fff;" ><i class="fas fa-plus"></i>  &nbsp;Add Video Link</</button><br>
+                            <center><code><strong>Already 6 Video Exists</strong> Delete Video to upload again</code></center>
+                            {%else%}
+                            <button type="button" class="btn" id="addrow" style="background-color: #673ab7; padding:5px 10px; color:#fff;" ><i class="fas fa-plus"></i>  &nbsp;New Link</button><br>
+                            <center><button type="submit" class="btn btn-primary">Upload</button>
+                            </center>
+                            {%endif%}
+                         
+                      </form> 
+                    </div>
+                    <!-- /.card-body -->
+                  </div>
+                  <!-- /.card -->
+
+                  
+                </div>
+              </div>
+              <!-- /.row -->
+
+              
+                <!-- video  -->
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="card">
+                      <div class="card-header">
+                        <h5>All Images </h5>
+                      </div>
+                      <div class="card-body">
+                          <!-- imafe -->
+                          <div class="row">
+                            {% for p in poli_img_slider %}
+                                {% if forloop.counter0|divisibleby:2 %}
+                                    </div><div class="row">
+                                {% endif %}
+                                {% if p.image %}
+                                    <div class="col-md-6">
+                                      <div class="card">
+                                        <div class="card-header">
+                                          <i class="fas fa-times-circle float-right" data-toggle="modal" data-target="#img_modal{{p.id}}" style="cursor: pointer;"></i>
+                                          <!-- modal -->
+                                          <div class="modal fade" id="img_modal{{p.id}}">
+                                           <div class="modal-dialog modal-sm">
+                                             <div class="modal-content">
+                                               <div class="modal-body">
+                                                 <p class="py-3">Are you sure ! You want to Delete</p>
+                                                 <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">No</button>
+                                                 <a  href="{% url 'delete_image_slider' id=p.id poli_id=p.politician.id %}" class="btn btn-danger btn-sm">Yes</a>
+                                               </div>
+                                               
+                                             </div>
+                                             <!-- /.modal-content -->
+                                           </div>
+                                           <!-- /.modal-dialog -->
+                                         </div>
+                                           </div>
+                                        <div class="card-body">
+                                          <img src="{{p.image.url}}" class="img-fluid" alt='{{p.image}}'>  
+                                        </div>
+                                      </div> 
+                                    </div>
+                                    {%endif%}
+                            {% endfor %}
+                            </div>
+                          <!-- end image -->
+                      </div>
+                    </div>
+                  </div>
+                  <!-- video slider -->
+                  <dic class="col-md-6">
+                    <div class="card">
+                      <div class="card-header">
+                        <h5>All Videos </h5>
+                      </div>
+                      <div class="card-body">
+                          <!-- video  -->
+                          <div class="row">
+                            {% for p in poli_video_slider %}
+                                {% if forloop.counter0|divisibleby:2 %}
+                                    </div><div class="row">
+                                {% endif %}
+                                    <div class="col-md-6">
+                                      <div class="card">
+                                        <div class="card-header">
+                                          <i class="fas fa-times-circle float-right" data-toggle="modal" data-target="#video_modal{{p.id}}" style="cursor: pointer;"></i>
+                                          <!-- modal -->
+                                          <div class="modal fade" id="video_modal{{p.id}}">
+                                           <div class="modal-dialog modal-sm">
+                                             <div class="modal-content">
+                                               <div class="modal-body">
+                                                 <p class="py-3">Are you sure ! You want to Delete</p>
+                                                 <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">No</button>
+                                                 <a  href="{% url 'delete_video_slider' id=p.id poli_id=p.politician.id %}" class="btn btn-danger btn-sm">Yes</a>
+                                               </div>
+                                               
+                                             </div>
+                                             <!-- /.modal-content -->
+                                           </div>
+                                           <!-- /.modal-dialog -->
+                                         </div>
+                                           </div>
+                                        <div class="card-body">
+                                        <iframe width="100%" height="200" src="{{p.video}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                        </div>
+                                      </div> 
+                                    </div>
+                            {% endfor %}
+                            </div>
+                          <!-- end video -->
+                      </div>
+                    </div>
+                  </dic>
+                  <!-- end video -->
+                </div>
+
+                
+        </div>
+        <!-- end conainer -->
+      </div>    
+</div>
+
+{%endblock main_content %}
+
+{%block custom_js %}
+<script>
+  var counter =  1;
+    $("#addrow").on("click", function () {
+
+      var cols = "";
+      cols += '<div class="row remove_row_link">'
+      cols += '<div class="col-sm-9">'
+      cols += '<div class="form-group">'
+      cols += '<label>Upload Videos</label>'
+      cols += '<input type="text" name="video_slider" class="form-control" placeholder="Add Video Link">'
+      cols += '</div>';
+      cols += '</div>';
+      cols += '<div class="col-sm-3">';
+      cols += '<button type="button" class="ibtnDel btn btn-sm btn-danger"  style="margin-top: 36px;">Remove</button>';
+      cols += '</div>';
+      cols += '</div>';
+      $("#first_video_input").append(cols);
+      counter++;
+    });
+
+    $("#first_video_input").on("click", ".ibtnDel", function (event) {
+      $(this).closest(".remove_row_link").remove();       
+      counter -= 1
+  });
+
+</script>
+{%endblock custom_js %}

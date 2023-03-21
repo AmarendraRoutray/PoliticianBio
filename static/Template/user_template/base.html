@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% load static %}
+
+  {% block fb_share %}
+  <meta name="og:type" content="website" />
+
+  {% endblock fb_share %}
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="{% static 'logo.png' %}">
+  <title>Politician Bio {% block title %} {% endblock title %}</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-238960909-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'UA-238960909-1');
+  </script>
+</head>
+
+<body>
+
+  <div class="page-wrapper chiller-theme toggled">
+    <a id="show-sidebar" class="btn btn-sm text-light" style=" background: linear-gradient(36deg, #0174ef, #21a87c);">
+      <i class="fas fa-bars"></i>
+    </a>
+    <nav id="sidebar" class="sidebar-wrapper">
+      <div class="sidebar-content">
+        <div class="sidebar-brand">
+          <a href="{% url 'home' %}" style="text-decoration: none;">
+            <img src="{% static 'logo.png' %}" width="100px" height="70px">
+          </a>
+          <div id="close-sidebar">
+            <i class="fas fa-times"></i>
+          </div>
+        </div>
+        {% if request.user.is_authenticated %}
+        <div class="sidebar-header">
+          <div class="user-info">
+            <span class="user-name">{{request.user.name}}</span>
+            <span class="user-role"><a id="logout_user">Logout</a></span>
+
+          </div>
+        </div>
+        {%endif%}
+        <!-- sidebar-header  -->
+
+
+        <div class="sidebar-menu">
+          <ul>
+            {% for s in state %}
+            <li class="sidebar-dropdown">
+              <a>
+                <span>{{s.name}}</span>
+              </a>
+              <div class="sidebar-submenu">
+                <ul>
+                  <li class="header-menu">
+                    <span>Districts</span>
+                  </li>
+                  {% for d in district %}
+                  {% if s.id == d.state.id %}
+                  <li class="sidebar-sub-dropdown">
+                    <a>
+                      <span>{{d.name}}</span>
+                    </a>
+                    <div class="sidebar-sub-submenu">
+                      <ul>
+                        {% for ds in desingnation %}
+                        {% if d.id == ds.district.id %}
+                        {% if ds.name == "MP" or ds.name == "New Politician" %}
+                        <li>
+                          <a href="{% url 'desingnation' id=ds.id %}">{{ds.name}}</a>
+                        </li>
+                        {%endif%}
+                        {%endif%}
+                        {% endfor %}
+
+                        <li class="header-menu">
+                          <span>Constituencies</span>
+                        </li>
+                        {% for c in constitution %}
+                        {% if d.id == c.district.id and c.name != "MP" and c.name != "New Politician" %}
+                        <!-- <li>
+                              <a href="#">{{c.name}}</a>
+                            </li> -->
+                        <!-- start sub-2 -->
+                        <li class="sidebar-sub2-dropdown">
+                          <a>
+                            <span>{{c.name}}</span>
+                          </a>
+                          <div class="sidebar-sub2-submenu">
+                            <ul>
+                              <li class="header-menu">
+                                <span>Designations</span>
+                              </li>
+                              {% for ds in desingnation %}
+                              {% if c.id == ds.constitution.id%}
+                              {% if ds.name != "ସାଂସଦ" or ds.name != "New Politician"%}
+                              <li>
+                                <a href="{% url 'desingnation' id=ds.id %}">{{ds.name}}</a>
+                              </li>
+                              {%endif%}
+                              {%endif%}
+                              {% endfor %}
+                            </ul>
+                          </div>
+                        </li>
+                        <!-- end sub-2 -->
+                        {%endif%}
+                        {% endfor %}
+                      </ul>
+                    </div>
+                  </li>
+                  {%endif%}
+                  {%endfor%}
+                </ul>
+              </div>
+            </li>
+            {%endfor%}
+          </ul>
+        </div>
+        <!-- sidebar-menu  -->
+      </div>
+    </nav>
+    <!-- sidebar-wrapper  -->
+    {% block main_content %}
+
+    {% endblock main_content%}
+    <!-- page-content" -->
+  </div>
+  <!-- page-wrapper -->
+  <script>
+
+    $('#add_user').on('click', function () {
+      var name = $('#name').val();
+      var email = $('#signup_email').val();
+      var valid_email = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+      if (!valid_email){
+        alert("You have entered an invalid email address!")
+        return
+      }
+
+      var password= $('#signup_password').val();
+      $.ajax({
+        url: "{% url 'add_user' %}",
+        type: "POST",
+        data: {
+          name: name,
+          email: email,
+          password: password
+        },
+        cache: false,
+        success: function (result) {
+          if (result['message'] == "success") {
+            var html = '';
+            html += '<div class="row mt-2" id="otp_main_section">'
+            html += '<div class="col-md-2"></div>'
+            html += '<div class="col-md-8">'
+            html += '<p style="margin:10px 0 5px 0; color:black; font-size:14px;">Do not refresh the page</p>'
+            html += '<p style="margin:10px 0;">OTP has been sent  to your email <span  style="color:#000; font-weight:600;">' + result["email"] + '</span></p>'
+            html += '<p style="margin:10px 0 10px 0; color:black; font-size:14px;">OTP will expire within 2 minutes</p>'
+            html += '<input type="text" id="otp" name="otp" class="form-control" placeholder="Enter OTP" maxlength="6" minlength="6" required autocomplete="off">'
+            html += '<center><button type="button" id="verify_otp_btn"  class="btn btn-primary btn-sm px-3 mt-3">Verify</button></center>'
+            html += '<button type="button" id="resend_otp_btn" style="color:blue;background-color:transparent;border:none; outline:none;display:none" class="px-3">Resend OTP</button>'
+            html += '<p id="resend_otp_section" style="cursor:text; color:black; margin:2px 0 0 0; background-color:transparent;border:none; font-size:15px;">Resend OTP <span id="timer" style="font-size:15px; color:red; padding-left:10px;"></span></p>'
+            html += '<input type="hidden" value="' + result["email"] + '" id="otp_email">'
+            html += '</div>'
+            html += '<div class="col-md-2"></div>'
+            html += '</div>'
+
+            $('#signup').remove();
+            $('#otp_verify').append(html);
+
+            // timser
+            let timerOn = true;
+            function timer(remaining) {
+              var m = Math.floor(remaining / 60);
+              var s = remaining % 60;
+              m = m < 10 ? '0' + m : m;
+              s = s < 10 ? '0' + s : s;
+              document.getElementById('timer').innerHTML = m + ':' + s;
+              remaining -= 1;
+              if (remaining >= 0 && timerOn) {
+                setTimeout(function () {
+                  timer(remaining);
+                }, 1000);
+                return;
+              }
+
+              if (!timerOn) {
+                return;
+              }
+              else {
+                $("#resend_otp_section").hide();
+                $("#resend_otp_btn").show();
+              }
+
+            }
+            timer(120);
+
+          }
+
+        },
+        error: function (result) {
+
+        }
+
+
+      });
+    });   //verify OTP
+    $(document).on('click', '#verify_otp_btn', function () {
+      var otp = $('#otp').val();
+      var email = $('#otp_email').val();
+      $.ajax({
+        url: "{% url 'verify_otp' %}",
+        type: "POST",
+        data: {
+          "email": email, "otp": otp
+        },
+        cache: false,
+        success: function (result) {
+          if (result['message'] == "success") {
+            location.reload();
+          }
+          if (result['message'] == "invalid_otp") {
+            $('<div class="alert alert-danger" style="margin-top:10px;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="fa fa-times-circle" style="color:#000;"></i></button><span class="text-center">Invalid OTP</span></div>').insertBefore('#otp_main_section')
+            $('#otp_email').val(result['email']);
+
+          }
+        },
+        error: function (result) {
+          console.log(result)
+        }
+
+
+      });
+    });
+
+    // Resend OTP
+    $(document).on('click', '#resend_otp_btn', function () {
+      var email = $('#otp_email').val();
+      $.ajax({
+        url: "{% url 'resend_otp' %}",
+        type: "POST",
+        data: {
+          email: email
+        },
+        cache: false,
+        success: function (result) {
+
+          if (result['message'] == "success") {
+            ('<div class="alert alert-success" style="margin-top:10px;"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="fa fa-times-circle" style="color:#000;"></i></button><span class="text-center">OTP Resent Successfully</span></div>').insertBefore('#otp_main_section')
+            $('#otp_email').val(result['email']);
+
+            $("#resend_otp_section").show();
+            $("#resend_otp_btn").hide();
+            // timser
+            let timerOn = true;
+            function timer(remaining) {
+              var m = Math.floor(remaining / 60);
+              var s = remaining % 60;
+              m = m < 10 ? '0' + m : m;
+              s = s < 10 ? '0' + s : s;
+              document.getElementById('timer').innerHTML = m + ':' + s;
+              remaining -= 1;
+              if (remaining >= 0 && timerOn) {
+                setTimeout(function () {
+                  timer(remaining);
+                }, 1000);
+                return;
+              }
+
+              if (!timerOn) {
+                return;
+              }
+              else {
+                $("#resend_otp_section").hide();
+                $("#resend_otp_btn").show();
+              }
+
+            }
+            timer(120);
+
+          }
+        },
+        error: function (result) {
+          console.log(result)
+        }
+      });
+    });
+
+
+    $('#login_email').on('keyup', function () {
+      var email = this.value;
+
+      $.ajax({
+        url: "{% url 'exist_user' %}",
+        type: "POST",
+        data: {
+          email: email
+        },
+        cache: false,
+        success: function (result) {
+
+          if (result['message'] == "success") {
+            $('#login_user').prop('disabled', false)
+            $('#exist').hide();
+          }
+          else {
+            $('#exist').hide();
+            if (email == '') {
+              $('#exist').hide();
+            }
+            else {
+              $('<span id="exist" class="text-danger">Email Not Exist</span>').insertAfter('#login_error');
+            }
+            $('#login_user').prop('disabled', true)
+
+          }
+        },
+        error: function (result) {
+          console.log(result)
+        }
+
+
+      });
+    });
+
+    //for signup
+    $('#signup_email').on('keyup', function () {
+      var email = this.value;
+
+      $.ajax({
+        url: "{% url 'exist_user' %}",
+        type: "POST",
+        data: {
+          email: email
+        },
+        cache: false,
+        success: function (result) {
+
+          if (result['message'] == "success") {
+            $('#add_user').prop('disabled', true)
+            if (email == '') {
+              $('#exist').hide();
+            }
+            else {
+              $('<span id="exist" class="text-danger">Email Exist</span>').insertAfter('#signup_error');
+            }
+          }
+          else {
+            $('#exist').hide();
+
+            $('#add_user').prop('disabled', false)
+
+          }
+        },
+        error: function (result) {
+          console.log(result)
+        }
+
+
+      });
+    });
+
+    $('#login_user').on('click', function () {
+      var email = $('#login_email').val();
+      var password = $('#login_password').val();
+      var valid_email = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)
+      if (!valid_email){
+        alert("You have entered an invalid email address!")
+        return
+      }
+      $.ajax({
+        url: "{% url 'login_user' %}",
+        type: "POST",
+        data: {
+          email: email,
+          password: password
+        },
+        cache: false,
+        success: function (result) {
+          console.log(result)
+          if (result['message'] == "success") {
+            location.reload();
+          }
+
+        },
+        error: function (result) {
+          console.log(result)
+        }
+
+
+      });
+    });
+    
+    $('#logout_user').on('click', function () {
+      $.ajax({
+        url: "{% url 'logout_user' %}",
+        type: "POST",
+        data: {
+
+        },
+        cache: false,
+        success: function (result) {
+
+          console.log(result)
+          location.reload();
+        },
+        error: function (result) {
+          console.log(result)
+        }
+
+
+      });
+    });
+
+    $('#do_like').on('click', function () {
+      var user_id = this.value;
+      var poli_id = "{{poli.id}}";
+      console.log(user_id, poli_id);
+      $.ajax({
+        url: "{% url 'politician_like'%}",
+        type: "POST",
+        data: {
+          user_id: user_id,
+          poli_id: poli_id
+
+        },
+        cache: false,
+        success: function (result) {
+          $('#tot_like').text(result['total_likes'])
+          if (result['message'] == 'likeadd') {
+            $('#do_like_far').removeClass('theme_color')
+            $('#do_like_far').addClass('weight_theme_color')
+          }
+          if (result['message'] == 'likeremove') {
+            $('#do_like_far').removeClass('weight_theme_color')
+            $('#do_like_far').addClass('theme_color')
+
+          }
+          if (result['message2'] == 'dislike_plus') {
+            $('#tot_dislike').text(result['total_dislikes'])
+            $('#tot_like').text(result['total_likes'])
+
+            $('#do_dislike_far').removeClass('weight_theme_color')
+            $('#do_dislike_far').addClass('theme_color')
+            $('#do_like_far').addClass('weight_theme_color')
+
+          }
+        },
+        error: function (result) {
+          console.log(result)
+        }
+
+
+      });
+    });
+
+    $('#do_dislike').on('click', function () {
+      var user_id = this.value;
+      var poli_id = "{{poli.id}}";
+      $.ajax({
+        url: "{% url 'politician_dislike'%}",
+        type: "POST",
+        data: {
+          user_id: user_id,
+          poli_id: poli_id
+
+        },
+        cache: false,
+        success: function (result) {
+          var dislikes = result['total_dislikes']
+          $('#tot_dislike').text(dislikes)
+          if (result['message'] == 'dislikeadd') {
+            $('#do_dislike_far').removeClass('theme_color')
+            $('#do_dislike_far').addClass('weight_theme_color')
+          }
+          if (result['message'] == 'dislikeremove') {
+            $('#do_dislike_far').removeClass('weight_theme_color')
+            $('#do_dislike_far').addClass('theme_color')
+
+          }
+          if (result['message2'] == 'like_plus') {
+            $('#tot_dislike').text(result['total_dislikes'])
+            $('#tot_like').text(result['total_likes'])
+
+            $('#do_like_far').removeClass('weight_theme_color')
+            $('#do_like_far').addClass('theme_color')
+            $('#do_dislike_far').removeClass('theme_color')
+            $('#do_dislike_far').addClass('weight_theme_color')
+
+          }
+        },
+        error: function (result) {
+          console.log(result)
+        }
+
+
+      });
+    });
+
+
+    $('#comment').on('click', function () {
+      var user_id = this.value;
+      var poli_id = "{{poli.id}}";
+      var comment = $('#comment_text').val()
+      var comment_image = $("#comment_image").val();// Getting the properties of file from file field
+      alert(comment_image, user_id);
+      $.ajax({
+        url: "{% url 'add_comment'%}",
+        type: "POST",
+        data: {
+          "user_id": user_id,
+          "poli_id": poli_id,
+          "comment": comment,
+          "comment_image": comment_image
+        },
+        cache: false,
+        success: function (result) {
+          if (result['message'] == 'commentadd') {
+            $('#comment_text').val('');
+            location.reload();
+
+          }
+
+        },
+        error: function (result) {
+          console.log(result)
+        }
+      });
+
+
+    });
+    // update_comment
+    $('#update_com_btn').on('click', function () {
+      var com_id = $('#comment_id').val();
+      var comment = $('#updated_comment').val();
+      $.ajax({
+        url: "{% url 'update_comment' %}",
+        type: "POST",
+        data: {
+          com_id: com_id,
+          comment: comment
+        },
+        cache: false,
+        success: function (result) {
+          if (result['message'] == 'commentupdated') {
+            alert("comment Updated")
+            location.reload();
+          }
+
+
+        },
+        error: function (result) {
+
+        }
+      });
+    });
+
+    $('#delete_com_btn').on('click', function () {
+      var com_id = this.value;
+      $.ajax({
+        url: "{% url 'delete_comment' %}",
+        type: "POST",
+        data: {
+          com_id: com_id
+        },
+        cache: false,
+        success: function (result) {
+          if (result['message'] == 'commentdelete') {
+            alert("comment delete")
+            location.reload();
+          }
+        },
+        error: function (result) {
+
+        }
+      });
+    });
+
+    //comeent text area auto resize 
+    comment_autosize()
+    function comment_autosize() {
+      var text = $('#comment_text');
+
+      text.each(function () {
+        $(this).attr('rows', 1);
+        resize($(this));
+      });
+
+      text.on('input', function () {
+        resize($(this));
+      });
+
+      function resize($text) {
+        $text.css('height', 'auto');
+        $text.css('height', $text[0].scrollHeight + 'px');
+      }
+    }
+
+
+    $(document).ready(function () {
+
+      $("#comment_notlogin").focus(function () {
+        $(this).prop('disabled', true);
+        $(this).css("outline", "none")
+        $("#modal-login").modal('show');
+        if ($("#modal-login").modal('hide')) {
+          $(this).prop('disabled', false);
+        }
+      });
+      $("#comment_text").on('keyup', function () {
+        var text = this.value;
+        if (text == '') {
+          $('#comment').prop('disabled', true);
+        }
+        else {
+          $('#comment').prop('disabled', false);
+        }
+      });
+      $("#comment_text").focus(function () {
+        $('#cancel_div').show();
+        $('#com_image_div').show();
+        var text = this.value;
+        if (text == '') {
+          $('#comment').prop('disabled', true);
+        }
+        else {
+          $('#comment').prop('disabled', false);
+        }
+      });
+      $("#cancel_btn").click(function () {
+        $('#cancel_div').hide();
+        $('#com_image_div').hide();
+      });
+
+      $("#regi").click(function () {
+
+        $('#login_modal_title').text("Signup To Continue");
+        $('#signup').show();
+        $("#signin").hide();
+      });
+
+      $("#logi").click(function () {
+        $('#login_modal_title').text("Login To Continue");
+        $('#signup').hide();
+        $("#signin").show();
+      });
+      $("#comment_image").change(function () {
+        filename = this.files[0].name
+        $('#com_label').text(filename)
+      });
+
+    });
+
+    var $temp = $("<input>");
+    var $url = $(location).attr('href');
+    $('.copy_link').on('click', function () {
+      $("body").append($temp);
+      $temp.val($url).select();
+      document.execCommand("copy");
+      $temp.remove();
+    })
+
+  </script>
+  <script src="{% static 'main.js' %}"></script>
+</body>
+
+</html>
